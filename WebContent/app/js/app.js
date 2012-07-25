@@ -24,5 +24,18 @@ angular.module('phonecat', ['phonecatFilters', 'phonecatServices', 'phonecatDire
 })(window.jQuery);
 
 function Set() {}
-Set.prototype.add = function(o) { this[o] = true; };
-Set.prototype.remove = function(o) { delete this[o]; };
+Set.prototype.collection = {};
+Set.prototype.add = function(o) { if(o != undefined) this.collection[o] = true; };
+Set.prototype.remove = function(o) { delete this.collection[o]; };
+Set.prototype.arraySort = function(a,b){
+    if(a.val<b.val) return -1;
+    if(a.val>b.val) return 1;
+    return 0;
+}; 
+Set.prototype.toArray = function() {
+	var array = [];
+	for(var prop in this.collection) {
+		array.push({val: prop});
+	}
+	return array.sort(this.arraySort);
+}

@@ -3,24 +3,22 @@
 /* Controllers */
 
 function PhoneListCtrl($scope, Phone) {
-	$scope.phones = Phone.query();
-
+	$scope.phones = Phone.query([], function() {
+		
+		var carrierSet = new Set();
+		for (var i = 0; i < $scope.phones.length; i++) {
+			carrierSet.add($scope.phones[i].carrier);
+		}
+		
+		$scope.carriers = carrierSet.toArray();
+	});
+	
+	$scope.category = 'carrier';
+	$scope.carrierFilter = '';
+	$scope.phoneFilter = '';
+	
 	if (!$scope.$parent.orderProp)
-		$scope.$parent.orderProp = 'age';
-
-	$scope.typeAhead = function() {
-		var phones = [];
-		phones = Phone.query([], function() {
-			var typeaheadSource = [];
-			for ( var i = 0; i < phones.length; i++) {
-				typeaheadSource[i] = phones[i].name;
-			}
-			$('input').typeahead({
-				source : typeaheadSource,
-				items : 10
-			});
-		});
-	};
+		$scope.$parent.orderProp = 'name';
 }
 
 //PhoneListCtrl.$inject = ['$scope', 'Phone'];

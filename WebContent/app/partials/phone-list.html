@@ -1,37 +1,36 @@
-<div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span2">
-      <!--Sidebar content-->
+<div class="container">
+	<!-- <div id="chart" style="width: 540px; margin: 0 auto;" carrier-chart="phones | filter: carrierFilter"></div> -->
+	<div id="searchControls" style="width: 540px; margin: 0 auto;">
+		Search: <input style="display: block;" class="input-xxlarge" typeahead>
+		Sort by: <select style="display: block;" ng-model="$parent.orderProp">
+		<option value="name">Alphabetical</option>
+		<option value="age">Newest</option>
+	</select>	
+	</div>
 
-      Search:
-      <input ng-model="$parent.query" ng-change="typeAhead()"> 
-      Sort by:
-      <select ng-model="$parent.orderProp">
-        <option value="name">Alphabetical</option>
-        <option value="age">Newest</option>
-      </select>
-      
-      <div id="chart" carrier-chart="phones | filter:query"></div>
-
-    </div>
-    <div class="span10">
-      <!--Body content-->
-	  
-	  <div class="accordion" id="phoneAccordion">
-	  	<div class="accordion-group" ng-repeat="phone in phones | filter:query | orderBy:orderProp">
-	  	  <div class="accordion-heading">
-	  	    <a class="accordion-toggle" data-toggle="collapse" data-parent="#phoneAccordion" href="#collapse-{{phone.age}}">{{phone.name}}</a>
-	  	  </div>
-	  	  <div id="collapse-{{phone.age}}" class="accordion-body collapse">
-	  	    <div class="accordion-inner">
-		  	  <a href="#/phones/{{phone.id}}"><img ng-src="{{phone.imageUrl}}" width="200px"></a>
-		  	  <p>{{phone.snippet}}</p>
-		  	  <a href="#/phones/{{phone.id}}">More detail</a>
-	  		</div>
-	  	  </div>
-	  	</div>
-	  </div>
-    </div>
-  </div>
+	<div class="accordion" id="phoneAccordion">
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse"
+					data-parent="#phoneAccordion" href="#collapse-carriers">Carrier</a>
+			</div>
+			<div id="collapse-carrier" class="accordion-body collapse in" category-accordion="carriers | filter: carrierFilter" next-category="phone">
+				<div class="accordion-inner">
+					<a ng-repeat="carrier in carriers | filter: carrierFilter" style="display: block">{{carrier.val}}</a>
+				</div>
+			</div>
+		</div>
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse"
+					data-parent="#phoneAccordion" href="#collapse-phone">Phone</a>
+			</div>
+			<div id="collapse-phone" class="accordion-body collapse">
+				<div class="accordion-inner">
+					<a ng-repeat="phone in phones | filter: phoneFilter | orderBy: orderProp" style="display: block">{{phone.name}}</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <div class="modal hide" id="phoneDetail"></div>

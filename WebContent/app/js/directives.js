@@ -2,17 +2,45 @@
 
 /* Directives */
 angular.module('phonecatDirectives', ['phonecatServices'])
-	.directive('phoneTypeahead', function(Phone) {
-		return function(scope, element) {
-			var phones = [];
-			
-			phones = Phone.query([], function() {
-				var typeaheadSource = [];
-				for ( var i = 0; i < phones.length; i++) {
-					typeaheadSource[i] = phones[i].name;
+	.directive('typeahead', function(Phone) {
+		return function(scope, element, attrs) {
+			element.bind('input change', function() {
+				scope[scope.category + 'Filter'] = element.attr('value');
+				scope.$apply();
+				
+				
+				if(scope.category == 'phone') {
+									
+					var phones = Phone.query([], function() {
+						var typeaheadSource = [];
+						for ( var i = 0; i < phones.length; i++) {
+							typeaheadSource[i] = phones[i].name;
+						}
+						element.typeahead({source: typeaheadSource, items: 10});
+					});
+				} 
+				else if(scope.category == 'carrier') {
+					var typeaheadSource = [];
+					for ( var i = 0; i < scope.carriers.length; i++) {
+						typeaheadSource[i] = scope.carriers[i].val;
+					}
+					element.typeahead({source: typeaheadSource, items: 10});
 				}
-				element.typeahead({source: typeaheadSource, items: 10});
 			});
+		};
+	})
+	.directive('categoryAccordion', function(){
+		return function(scope, element, attrs) {
+			scope.$watch(attrs.categoryAccordion, 
+					function(data) {
+				if(data && data.length == 1) {
+					element.prev().children().text(data[0].val).addClass('selected');
+					element.collapse();
+					$('#collapse-' + attrs.nextCategory).collapse();
+					$('input').attr('value', '')
+					scope.category = attrs.nextCategory;
+				}
+			}, true);
 		};
 	})
 	.directive('carrierChart', function(Phone) {
@@ -33,35 +61,18 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 				var phoneCarriersString = phoneCarriers.toString();
 				
 				var chartData = [];
-				for(var carrier in carrierSet ) {
+				for (var carrier in carrierSet.collection ) {
 					var match = phoneCarriersString.match(carrier);
 					if(match)
 						chartData.push([carrier, match.length]);
 				}
 				
-//				var chartData = [];
-//				phones:
-//				for (var i = 0; i < phones.length; i++) {
-//					var carrier = phones[i].carrier;
-//					carriers:
-//					if(carrier) {
-//						for(var j = 0; j < chartData.length; j++) {
-//							var currentCarrier = chartData[j]; 
-//							if(currentCarrier[0] == carrier) {
-//								currentCarrier[1]++;
-//								break carriers;
-//							}
-//						}
-//						chartData.push([carrier, 1]);
-//					}						
-//				}
-				data.addRows(chartData);
+				data.addRows(chartData.sort(Set.arraySort));
 				
 				var options = {'title':'Carriers'};
 
 		        var chart = new google.visualization.PieChart(element[0]);
 		        chart.draw(data, options);
 			}, true);
-//			var phones = scope.$eval(attrs.carrierChart);
 		};
 	});
