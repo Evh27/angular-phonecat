@@ -6,7 +6,7 @@
 
 <ul class="phone-thumbs">
   <li ng-repeat="img in phone.images">
-    <img ng-src="{{img}}" ng-click="setImage(img)">
+    <img ng-src="{{img}}" ng-mouseenter="setImage(img)">
   </li>
 </ul>
 
@@ -108,6 +108,6 @@
   </li>
   <li>
     <span>Additional Features</span>
-    <dd>{{phone.additionalFeatures}}</dd>
+    <dl><dd>{{phone.additionalFeatures}}</dd></dl>
   </li>
 </ul>

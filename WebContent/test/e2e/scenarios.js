@@ -20,10 +20,10 @@ describe('PhoneCat App', function() {
     it('should filter the phone list as user types into the search box', function() {
       expect(repeater('.phones li').count()).toBe(20);
 
-      input('query').enter('nexus');
+      input('$parent.query').enter('nexus');
       expect(repeater('.phones li').count()).toBe(1);
 
-      input('query').enter('motorola');
+      input('$parent.query').enter('motorola');
       expect(repeater('.phones li').count()).toBe(8);
     });
 
@@ -44,7 +44,7 @@ describe('PhoneCat App', function() {
 
 
     it('should render phone specific links', function() {
-      input('query').enter('nexus');
+      input('$parent.query').enter('nexus');
       element('.phones li a').click();
       expect(browser().location().url()).toBe('/phones/nexus-s');
     });
