@@ -6,24 +6,26 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 		return function(scope, element, attrs) {
 			
 			element.bind('input change', function() {
-				scope.categories[scope.current_category].filter = element.attr('value');
+				scope.current_category.filter = element.attr('value');
 				scope.$apply();
 				
-				var currentScopeTitle = scope.categories[scope.current_category].title;
-				if(currentScopeTitle == 'phone') {
+				if(scope.current_category.title == 'phone') {
 					var phones = Phone.query([], function() {
 						var typeaheadSource = [];
 						for ( var i = 0; i < phones.length; i++) {
-							typeaheadSource[i] = phones[i].name;
+							typeaheadSource.push(phones[i].name);
 						}
 						element.typeahead({source: typeaheadSource, items: 10});
 					});
 				} 
-				else if(currentScopeTitle == 'carrier') {
-					var typeaheadSource = [];
-					var carriers = scope.categories[scope.current_category].items;
+				else if(scope.current_category.title == 'carrier') {
+					var typeaheadSource = [],
+						carriers = scope.current_category.items,
+						id = scope.current_category.idProp;
+					
 					for ( var i = 0; i < carriers.length; i++) {
-						typeaheadSource[i] = carriers[i].val;
+						var carrier = carriers[i];
+						typeaheadSource.push(carrier[id]); 
 					}
 					element.typeahead({source: typeaheadSource, items: 10});
 				}
@@ -35,21 +37,22 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 			element.click(function(event) {
 				event.preventDefault();
 				
-				var currentCategoryCollapse = $('#collapse-' + scope.current_category);
-				var nextCategory = currentCategoryCollapse.attr('next-category');
+				var currentCategory = scope.current_category;
+				var section = $('#collapse-' + currentCategory.title);
+				var nextCategory = scope.categories[attrs.nextCategory];
 				
-				scope.setCategoryItem(element.text());
+				currentCategory.selectedItem = currentCategory.items[attrs.categoryItemClick];
 				scope.current_category = nextCategory;
 				scope.$apply();
 				
-				currentCategoryCollapse.prev().addClass('alert alert-success fade in');
-				currentCategoryCollapse.prev().children('a.close').removeClass('hide');
-				currentCategoryCollapse.collapse('hide');
+				section.prev().addClass('alert alert-success');
+				section.prev().children('a.close').removeClass('hide');
 				
-				$('#collapse-' + nextCategory).collapse();
+				section.collapse('hide');
+				$('#collapse-' + nextCategory.title).collapse('show');
+				$('#accordion > .accordion-body:not(.in)').collapse('hide');
 				
-				$('input').attr('value', '');
-			
+				$('input').attr('value', '');			
 			});			
 		};		
 	})

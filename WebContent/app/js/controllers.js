@@ -19,14 +19,10 @@ function PhoneListCtrl($scope, Phone) {
 				$scope.categories[1].items = phones;
 			});
 		})];
-	$scope.current_category = 0;
+	$scope.current_category = $scope.categories[0];
 	
 	if (!$scope.$parent.orderProp)
 		$scope.$parent.orderProp = 'name';
-	
-	$scope.setCategoryItem = function(item) {
-		$scope.categories[$scope.current_category].selectedItem = item;
-	};
 	
 }
 

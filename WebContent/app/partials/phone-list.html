@@ -2,48 +2,23 @@
 	<!-- <div id="chart" style="width: 540px; margin: 0 auto;" carrier-chart="phones | filter: carrierFilter"></div> -->
 	<div id="searchControls" style="width: 540px; margin: 0 auto;">
 		Search: <input style="display: block;" class="input-xxlarge" typeahead>
-		Sort by: <select style="display: block;" ng-model="$parent.orderProp">
-		<option value="name">Alphabetical</option>
-		<option value="age">Newest</option>
-	</select>	
 	</div>
-
+	
+	<input style="display: block; position: absolute; right: 0px" class="input-medium" typeahead placeholder="Filter">
 	<div class="accordion" id="accordion">
 		<div class="accordion-group" ng-repeat="category in categories">
 			<div class="accordion-heading">
 				<a class="close hide" href="#" clear-category="{{$index}}">×</a>
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{category.title}}">{{category.display()}}</a>
+				<a class="accordion-toggle" href="#collapse-{{category.title}}">{{category.display()}}</a>
 			</div>
 			<div id="collapse-{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
 				<div class="accordion-inner">
-					<a category-item-click="{{$parent.$index}}" ng-repeat="item in category.items | filter: category.filter" style="display: block">{{item[category.idProp]}}</a>
+					<a ng-repeat="item in category.items | filter: category.filter"
+						category-item-click="{{$index}}" next-category="{{$parent.$index + 1}}" 
+						style="display: block">{{item[category.idProp]}}</a>
 				</div>
 			</div>
 		</div>
-		<!-- 
-		<div class="accordion-group">
-			<div class="accordion-heading">
-				<a class="close hide" href="#" clear-category="carrier">×</a>
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#phoneAccordion" href="#collapse-carrier">{{displayCategory('carrier')}}</a>
-			</div>
-			<div id="collapse-carrier" class="accordion-body collapse in">
-				<div class="accordion-inner">
-					<a category-item-click ng-repeat="carrier in carriers | filter: carrierFilter" style="display: block">{{carrier.val}}</a>
-				</div>
-			</div>
-		</div>
-		<div class="accordion-group">
-			<div class="accordion-heading">
-				<a class="close hide" href="#" clear-category="phone">×</a>
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#phoneAccordion" href="#collapse-phone">{{displayCategory('phone')}}</a>
-			</div>
-			<div id="collapse-phone" class="accordion-body collapse">
-				<div class="accordion-inner">
-					<a category-item-click ng-repeat="phone in phones | filter:{name:phoneFilter,carrier:selected_carrier} | orderBy: orderProp" style="display: block">{{phone.name}}</a>
-				</div>
-			</div>
-		</div>
-		 -->
 	</div>
 </div>
 <div class="modal hide" id="phoneDetail"></div>

@@ -16,7 +16,7 @@ angular.module('phonecat', ['phonecatFilters', 'phonecatServices', 'phonecatDire
 			var val = this.$menu.find('.active').attr('data-value');
 		    this.$element
 		      .val(this.updater(val))
-		      .trigger('input change');
+		      .trigger('input').change();
 
 		    return this.hide();
 		} 
@@ -57,7 +57,7 @@ Category.prototype.selectedItem = undefined;
 Category.prototype.filter = '';
 Category.prototype.display = function() {
 	if(this.selectedItem)
-		return this.selectedItem.name();
+		return this.selectedItem[this.idProp];
 	else
 		return this.title.charAt(0).toUpperCase() + this.title.substr(1);
 };
