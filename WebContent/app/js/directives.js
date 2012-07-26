@@ -4,13 +4,13 @@
 angular.module('phonecatDirectives', ['phonecatServices'])
 	.directive('typeahead', function(Phone) {
 		return function(scope, element, attrs) {
+			
 			element.bind('input change', function() {
-				scope[scope.category + 'Filter'] = element.attr('value');
+				scope.categories[scope.current_category].filter = element.attr('value');
 				scope.$apply();
 				
-				
-				if(scope.category == 'phone') {
-									
+				var currentScopeTitle = scope.categories[scope.current_category].title;
+				if(currentScopeTitle == 'phone') {
 					var phones = Phone.query([], function() {
 						var typeaheadSource = [];
 						for ( var i = 0; i < phones.length; i++) {
@@ -19,30 +19,55 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 						element.typeahead({source: typeaheadSource, items: 10});
 					});
 				} 
-				else if(scope.category == 'carrier') {
+				else if(currentScopeTitle == 'carrier') {
 					var typeaheadSource = [];
-					for ( var i = 0; i < scope.carriers.length; i++) {
-						typeaheadSource[i] = scope.carriers[i].val;
+					var carriers = scope.categories[scope.current_category].items;
+					for ( var i = 0; i < carriers.length; i++) {
+						typeaheadSource[i] = carriers[i].val;
 					}
 					element.typeahead({source: typeaheadSource, items: 10});
 				}
 			});
 		};
 	})
-	.directive('categoryAccordion', function(){
+	.directive('categoryItemClick', function() {
 		return function(scope, element, attrs) {
-			scope.$watch(attrs.categoryAccordion, 
-					function(data) {
-				if(data && data.length == 1) {
-					element.prev().children().text(data[0].val).addClass('selected');
-					element.collapse();
-					$('#collapse-' + attrs.nextCategory).collapse();
-					$('input').attr('value', '')
-					scope.category = attrs.nextCategory;
-				}
-			}, true);
-		};
+			element.click(function(event) {
+				event.preventDefault();
+				
+				var currentCategoryCollapse = $('#collapse-' + scope.current_category);
+				var nextCategory = currentCategoryCollapse.attr('next-category');
+				
+				scope.setCategoryItem(element.text());
+				scope.current_category = nextCategory;
+				scope.$apply();
+				
+				currentCategoryCollapse.prev().addClass('alert alert-success fade in');
+				currentCategoryCollapse.prev().children('a.close').removeClass('hide');
+				currentCategoryCollapse.collapse('hide');
+				
+				$('#collapse-' + nextCategory).collapse();
+				
+				$('input').attr('value', '');
+			
+			});			
+		};		
 	})
+	.directive('clearCategory', function() {
+		return function(scope, element, attrs) {
+			element.click(function(event) {
+				event.preventDefault();
+				
+				scope.current_category = attrs.clearCategory;
+				scope.setCategoryItem('');
+				scope.$apply();
+				
+				element.addClass('hide');
+				element.parent().removeClass('alert alert-success');
+				$('#collapse-' + scope.current_category).collapse();
+			});
+		};
+	})	
 	.directive('carrierChart', function(Phone) {
 		return function(scope, element, attrs) {
 			scope.$watch(attrs.carrierChart,
