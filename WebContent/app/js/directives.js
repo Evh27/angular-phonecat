@@ -2,11 +2,6 @@
 
 /* Directives */
 angular.module('phonecatDirectives', ['phonecatServices'])
-	.constant('refreshTypeahead', function refreshTypeahead (source, items) {
-		$('ul.typeahead').remove();
-		element.removeData('typeahead');
-		element.typeahead({source: source, items: items});
-	})
 	.directive('categoryTypeahead', function(Phone, UIUtil) {
 		return function(scope, element, attrs) {
 			

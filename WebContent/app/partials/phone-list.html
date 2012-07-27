@@ -14,7 +14,7 @@
 			</div>
 			<div id="collapse-{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
 				<div class="accordion-inner" ng-switch on="category.displayType">
-					<ul class="thumbnails" ng-switch-when="thumbnails">
+					<ul class="thumbnails" ng-switch-when="thumbnails" ng-cloak>
 						<li class="span4" ng-repeat="item in category.items | filter: category.filter | categoryFilter : category">
 							<a category-item-click="{{category.items.indexOf(item)}}" next-category="{{$parent.$index + 1}}">
 								<img ng-src="{{item.imageUrl}}">
