@@ -1,21 +1,34 @@
 <div class="container">
 	<!-- <div id="chart" style="width: 540px; margin: 0 auto;" carrier-chart="phones | filter: carrierFilter"></div> -->
-	<div id="searchControls" style="width: 540px; margin: 0 auto;">
-		Search: <input style="display: block;" class="input-xxlarge" typeahead>
+	<div id="searchControls" style="width: 280px; margin: 0 auto;">
+		<input search-typeahead style="display: block;" class="input-xlarge" placeholder="Search for a part, serial, or model number...">
 	</div>
-	
-	<input style="display: block; position: absolute; right: 0px" class="input-medium" typeahead placeholder="Filter">
+	<div style="position: relative; height: 35px">
+		<input category-typeahead id="filter" style="display: block; position: absolute; right: 0px" class="input-large" placeholder="Filter">
+	</div>
 	<div class="accordion" id="accordion">
 		<div class="accordion-group" ng-repeat="category in categories">
 			<div class="accordion-heading">
 				<a class="close hide" href="#" clear-category="{{$index}}">×</a>
-				<a class="accordion-toggle" href="#collapse-{{category.title}}">{{category.display()}}</a>
+				<a class="accordion-toggle" href="#collapse-{{category.title}}">{{category.displayName()}}</a>
 			</div>
 			<div id="collapse-{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
-				<div class="accordion-inner">
-					<a ng-repeat="item in category.items | filter: category.filter"
-						category-item-click="{{$index}}" next-category="{{$parent.$index + 1}}" 
-						style="display: block">{{item[category.idProp]}}</a>
+				<div class="accordion-inner" ng-switch on="category.displayType">
+					<ul class="thumbnails" ng-switch-when="thumbnails">
+						<li class="span4" ng-repeat="item in category.items | filter: category.filter | categoryFilter : category">
+							<a category-item-click="{{category.items.indexOf(item)}}" next-category="{{$parent.$index + 1}}">
+								<img ng-src="{{item.imageUrl}}">
+							</a>
+							<div class="caption">
+								<p>{{item[category.displayProp]}}</p>									
+							</div>
+						</li>
+					</ul>
+					<div ng-switch-when="list">
+						<a ng-repeat="item in category.items | filter: category.filter | categoryFilter : category" 
+						category-item-click="{{category.items.indexOf(item)}}" next-category="{{$parent.$index + 1}}"
+						style="display: block;">{{item[category.displayProp]}}</a>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -2,7 +2,12 @@
 
 /* Directives */
 angular.module('phonecatDirectives', ['phonecatServices'])
-	.directive('typeahead', function(Phone) {
+	.constant('refreshTypeahead', function refreshTypeahead (source, items) {
+		$('ul.typeahead').remove();
+		element.removeData('typeahead');
+		element.typeahead({source: source, items: items});
+	})
+	.directive('categoryTypeahead', function(Phone, UIUtil) {
 		return function(scope, element, attrs) {
 			
 			element.bind('input change', function() {
@@ -11,26 +16,42 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 				
 				if(scope.current_category.title == 'phone') {
 					var phones = Phone.query([], function() {
-						var typeaheadSource = [];
+						var typeaheadPhones = [];
 						for ( var i = 0; i < phones.length; i++) {
-							typeaheadSource.push(phones[i].name);
+							var prev = scope.current_category.previousCategory;
+							var selectedItem = prev.selectedItem[prev.displayProp];
+							if(phones[i][prev.displayProp] == selectedItem)
+								typeaheadPhones.push(phones[i].name);
 						}
-						element.typeahead({source: typeaheadSource, items: 10});
+						UIUtil.refreshTypeahead(element, {source: typeaheadPhones, items: 5});
 					});
 				} 
 				else if(scope.current_category.title == 'carrier') {
-					var typeaheadSource = [],
+					var typeaheadCarriers = [],
 						carriers = scope.current_category.items,
-						id = scope.current_category.idProp;
+						displayProp = scope.current_category.displayProp;
 					
 					for ( var i = 0; i < carriers.length; i++) {
 						var carrier = carriers[i];
-						typeaheadSource.push(carrier[id]); 
+						typeaheadCarriers.push(carrier[displayProp]); 
 					}
-					element.typeahead({source: typeaheadSource, items: 10});
+					UIUtil.refreshTypeahead(element, {source: typeaheadCarriers, items: 5});
 				}
 			});
 		};
+	})
+	.directive('searchTypeahead', function(Phone, UIUtil) {
+		return function(scope, element, attrs) {
+			element.bind('input change', function() {
+				var phones = Phone.query([], function() {
+					var typeaheadPhones = [];
+					for ( var i = 0; i < phones.length; i++) {
+						typeaheadPhones.push(phones[i].name);
+					}
+					UIUtil.refreshTypeahead(element, {source: typeaheadPhones, items: 5});
+				});
+			});
+		};		
 	})
 	.directive('categoryItemClick', function() {
 		return function(scope, element, attrs) {
@@ -42,17 +63,17 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 				var nextCategory = scope.categories[attrs.nextCategory];
 				
 				currentCategory.selectedItem = currentCategory.items[attrs.categoryItemClick];
-				scope.current_category = nextCategory;
+				section.collapse('hide');
+				if(nextCategory) {
+					scope.setCategory(nextCategory);
+					$('#collapse-' + nextCategory.title).collapse('show');
+				}				
 				scope.$apply();
 				
 				section.prev().addClass('alert alert-success');
 				section.prev().children('a.close').removeClass('hide');
-				
-				section.collapse('hide');
-				$('#collapse-' + nextCategory.title).collapse('show');
-				$('#accordion > .accordion-body:not(.in)').collapse('hide');
-				
-				$('input').attr('value', '');			
+								
+				$('#filter').attr('value', '');			
 			});			
 		};		
 	})
@@ -61,13 +82,27 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 			element.click(function(event) {
 				event.preventDefault();
 				
-				scope.current_category = attrs.clearCategory;
-				scope.setCategoryItem('');
-				scope.$apply();
+				var numCategories = scope.categories.length;
 				
-				element.addClass('hide');
-				element.parent().removeClass('alert alert-success');
-				$('#collapse-' + scope.current_category).collapse();
+				for(var i = numCategories-1; i >= attrs.clearCategory; i-- ) {
+					var category = scope.categories[i];
+					
+					if(category.selectedItem) {
+						category.selectedItem = undefined;
+						$('a.close[clear-category='+i+']').addClass('hide')
+							.parent().removeClass('alert alert-success');
+						category.filter = '';
+					}
+									
+					if(i == attrs.clearCategory) {
+						scope.setCategory(category);
+						scope.$apply();
+						$('#collapse-' + category.title).collapse('show');
+					} else {
+						$('#collapse-' + category.title).collapse('hide');
+					}
+					
+				}				
 			});
 		};
 	})	

@@ -8,6 +8,8 @@ function PhoneListCtrl($scope, Phone) {
 		[new Category('carrier'), 
 		new Category('phone', 'name', function(category) {
 			
+			category.displayType = 'thumbnails';
+		
 			Phone.query([], function(phones) {
 				
 				var carrierSet = new Set('carrier');
@@ -19,7 +21,15 @@ function PhoneListCtrl($scope, Phone) {
 				$scope.categories[1].items = phones;
 			});
 		})];
-	$scope.current_category = $scope.categories[0];
+	
+	for(var i=1; i < $scope.categories.length; i++) {
+		$scope.categories[i].previousCategory = $scope.categories[i-1];
+	}	
+	
+	$scope.setCategory = function(category) {
+		$scope.current_category = category;
+	};
+	$scope.setCategory($scope.categories[0]);
 	
 	if (!$scope.$parent.orderProp)
 		$scope.$parent.orderProp = 'name';
