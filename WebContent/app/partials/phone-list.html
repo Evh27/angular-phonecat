@@ -13,7 +13,7 @@
 				<a class="accordion-toggle" href="#collapse-{{category.title}}">{{category.displayName()}}</a>
 			</div>
 			<div id="collapse-{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
-				<div class="accordion-inner">
+				<div class="accordion-inner row-fluid">
 					<ul class="{{category.displayType}}">
 						<li ng-class="{span4:category.displayType == 'thumbnails'}"
 							ng-repeat="item in category.items | filter: category.filter | categoryFilter : category">
