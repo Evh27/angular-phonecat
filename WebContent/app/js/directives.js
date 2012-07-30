@@ -3,8 +3,37 @@
 /* Directives */
 angular.module('phonecatDirectives', ['phonecatServices'])
 	.directive('categoryTypeahead', function(Phone, UIUtil) {
+		
 		return function(scope, element, attrs) {
 			
+			scope.$watch(attrs.ngModel, function() {
+				if(scope.current_category.title == 'phone') {
+					var phones = Phone.query([], function() {
+						var typeaheadPhones = [];
+						for ( var i = 0; i < phones.length; i++) {
+							var prev = scope.current_category.previousCategory;
+							var selectedItem = prev.selectedItem[prev.displayProp];
+							if(phones[i][prev.displayProp] == selectedItem)
+								typeaheadPhones.push(phones[i].name);
+						}
+						UIUtil.refreshTypeahead(element, {source: typeaheadPhones, items: 5});
+					});
+				} 
+				else if(scope.current_category.title == 'carrier') {
+					var typeaheadCarriers = [],
+						carriers = scope.current_category.items,
+						displayProp = scope.current_category.displayProp;
+					
+					for ( var i = 0; i < carriers.length; i++) {
+						var carrier = carriers[i];
+						typeaheadCarriers.push(carrier[displayProp]); 
+					}
+					UIUtil.refreshTypeahead(element, {source: typeaheadCarriers, items: 5});
+				}
+			}, true);
+				
+			
+			/*
 			element.bind('input change', function() {
 				scope.current_category.filter = element.attr('value');
 				scope.$apply();
@@ -32,7 +61,7 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 					}
 					UIUtil.refreshTypeahead(element, {source: typeaheadCarriers, items: 5});
 				}
-			});
+			});*/
 		};
 	})
 	.directive('searchTypeahead', function(Phone, UIUtil) {

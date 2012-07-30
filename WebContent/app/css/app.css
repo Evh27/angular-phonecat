@@ -90,5 +90,11 @@ a.selected {
 .alert {
 	margin-bottom: 0px;
 }
+ul.list {
+	margin: 0px;
+}
+ul.list > li {
+	display: block; 
+}
 
 
