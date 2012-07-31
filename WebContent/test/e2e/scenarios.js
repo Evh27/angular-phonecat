@@ -22,20 +22,20 @@ describe('PhoneCat App', function() {
     	
     	input('current_category.filter').enter('verizon');
     	
-    	expect(repeater('a[next-category="1"]').count()).toBe(1);
+    	expect(repeater('li:first').count()).toBe(1);
     });
     
     it('should display the name of the selected carrier on the header', function() {
-    	element('a[category-item-click="0"]').click();
+    	element('li:first > a:first').click();
   	
     	expect(element('.accordion-heading:first > a.accordion-toggle').text()).toEqual('Other');
     });
     
     it('should clear the selected carrier when clicking the "x"', function() {
-    	element('a[category-item-click="0"]').click();
+    	element('li:first > a:first').click();
     	expect(element('.accordion-heading:first > a.accordion-toggle').text()).toEqual('Other');
     	
-    	element('a[clear-category="0"]').click();
+    	element('a.close:first').click();
     	expect(element('.accordion-heading:first > a.accordion-toggle').text()).toEqual('Carrier');
     });
     

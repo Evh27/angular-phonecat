@@ -8,17 +8,16 @@
 	</div>
 	<div class="accordion" id="accordion">
 		<div class="accordion-group" ng-repeat="category in categories">
-			<div class="accordion-heading">
-				<a class="close hide" href="#" clear-category="{{$index}}">×</a>
-				<a class="accordion-toggle" href="#collapse-{{category.title}}">{{category.displayName()}}</a>
+			<div class="accordion-heading" ng-class="{'alert alert-success': category.selectedItem}">
+				<a class="close" ng-class="{hide: !category.selectedItem}" ng-click="clearCategory(category)">×</a>
+				<a class="accordion-toggle">{{category.displayName()}}</a>
 			</div>
-			<div id="collapse-{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
+			<div category-collapse="{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
 				<div class="accordion-inner row-fluid">
 					<ul class="{{category.displayType}}">
 						<li ng-class="{span4:category.displayType == 'thumbnails'}"
 							ng-repeat="item in category.items | filter: category.filter | categoryFilter : category">
-							<a category-item-click="{{category.items.indexOf(item)}}" next-category="{{$parent.$index + 1}}"
-								ng-switch on="category.displayType">
+							<a ng-click="selectItem(category.items.indexOf(item))" ng-switch on="category.displayType">
 								<img ng-switch-when="thumbnails" ng-src="{{item.imageUrl}}">
 								<span ng-switch-when="list">{{item[category.displayProp]}}</span>
 							</a>

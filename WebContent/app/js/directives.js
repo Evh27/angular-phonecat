@@ -2,66 +2,15 @@
 
 /* Directives */
 angular.module('phonecatDirectives', ['phonecatServices'])
-	.directive('categoryTypeahead', function(Phone, UIUtil) {
-		
+	.directive('categoryTypeahead', function(UIUtil) {
 		return function(scope, element, attrs) {
-			
 			scope.$watch(attrs.ngModel, function() {
-				if(scope.current_category.title == 'phone') {
-					var phones = Phone.query([], function() {
-						var typeaheadPhones = [];
-						for ( var i = 0; i < phones.length; i++) {
-							var prev = scope.current_category.previousCategory;
-							var selectedItem = prev.selectedItem[prev.displayProp];
-							if(phones[i][prev.displayProp] == selectedItem)
-								typeaheadPhones.push(phones[i].name);
-						}
-						UIUtil.refreshTypeahead(element, {source: typeaheadPhones, items: 5});
-					});
-				} 
-				else if(scope.current_category.title == 'carrier') {
-					var typeaheadCarriers = [],
-						carriers = scope.current_category.items,
-						displayProp = scope.current_category.displayProp;
-					
-					for ( var i = 0; i < carriers.length; i++) {
-						var carrier = carriers[i];
-						typeaheadCarriers.push(carrier[displayProp]); 
-					}
-					UIUtil.refreshTypeahead(element, {source: typeaheadCarriers, items: 5});
+				if(scope.current_category) {
+					var items = scope.current_category.typeahead();
+					element.typeahead({source: items, items: 5});
+//					UIUtil.refreshTypeahead(element, {source: items, items: 5});
 				}
 			}, true);
-				
-			
-			/*
-			element.bind('input change', function() {
-				scope.current_category.filter = element.attr('value');
-				scope.$apply();
-				
-				if(scope.current_category.title == 'phone') {
-					var phones = Phone.query([], function() {
-						var typeaheadPhones = [];
-						for ( var i = 0; i < phones.length; i++) {
-							var prev = scope.current_category.previousCategory;
-							var selectedItem = prev.selectedItem[prev.displayProp];
-							if(phones[i][prev.displayProp] == selectedItem)
-								typeaheadPhones.push(phones[i].name);
-						}
-						UIUtil.refreshTypeahead(element, {source: typeaheadPhones, items: 5});
-					});
-				} 
-				else if(scope.current_category.title == 'carrier') {
-					var typeaheadCarriers = [],
-						carriers = scope.current_category.items,
-						displayProp = scope.current_category.displayProp;
-					
-					for ( var i = 0; i < carriers.length; i++) {
-						var carrier = carriers[i];
-						typeaheadCarriers.push(carrier[displayProp]); 
-					}
-					UIUtil.refreshTypeahead(element, {source: typeaheadCarriers, items: 5});
-				}
-			});*/
 		};
 	})
 	.directive('searchTypeahead', function(Phone, UIUtil) {
@@ -77,59 +26,19 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 			});
 		};		
 	})
-	.directive('categoryItemClick', function() {
+	.directive('categoryCollapse', function(UIUtil) {
 		return function(scope, element, attrs) {
-			element.click(function(event) {
-				event.preventDefault();
-				
-				var currentCategory = scope.current_category;
-				var section = $('#collapse-' + currentCategory.title);
-				var nextCategory = scope.categories[attrs.nextCategory];
-				
-				currentCategory.selectedItem = currentCategory.items[attrs.categoryItemClick];
-				section.collapse('hide');
-				if(nextCategory) {
-					scope.setCategory(nextCategory);
-					$('#collapse-' + nextCategory.title).collapse('show');
-				}				
-				scope.$apply();
-				
-				section.prev().addClass('alert alert-success');
-				section.prev().children('a.close').removeClass('hide');
-								
-				$('#filter').attr('value', '');			
-			});			
-		};		
-	})
-	.directive('clearCategory', function() {
-		return function(scope, element, attrs) {
-			element.click(function(event) {
-				event.preventDefault();
-				
-				var numCategories = scope.categories.length;
-				
-				for(var i = numCategories-1; i >= attrs.clearCategory; i-- ) {
-					var category = scope.categories[i];
-					
-					if(category.selectedItem) {
-						category.selectedItem = undefined;
-						$('a.close[clear-category='+i+']').addClass('hide')
-							.parent().removeClass('alert alert-success');
-						category.filter = '';
-					}
-									
-					if(i == attrs.clearCategory) {
-						scope.setCategory(category);
-						scope.$apply();
-						$('#collapse-' + category.title).collapse('show');
-					} else {
-						$('#collapse-' + category.title).collapse('hide');
-					}
-					
-				}				
+			scope.$watch('current_category', function(newCat) {
+				if(newCat && newCat.title == attrs.categoryCollapse) {
+					element.collapse('show');
+					UIUtil.clearTypeahead();
+				} 
+				else if(element.hasClass('in')) {
+					element.collapse('hide');
+				}
 			});
 		};
-	})	
+	})
 	.directive('carrierChart', function(Phone) {
 		return function(scope, element, attrs) {
 			scope.$watch(attrs.carrierChart,
