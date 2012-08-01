@@ -19,6 +19,8 @@
 				</executions>
 				<configuration>
 					<preloadSources>
+						<source>http://code.jquery.com/jquery-1.7.2.min.js</source>
+						<source>../../app/lib/bootstrap.js</source>
 						<source>../../app/lib/angular/angular.js</source>
 						<source>../../app/lib/angular/angular-resource.js</source>
 						<source>../lib/angular/angular-mocks.js</source>

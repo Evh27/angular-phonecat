@@ -2,7 +2,7 @@
 
 /* jasmine specs for filters go here */
 
-describe('filter', function() {
+describe('Filters', function() {
 
   beforeEach(module('phonecatFilters'));
 

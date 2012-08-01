@@ -42,7 +42,6 @@ function PhoneListCtrl($scope, Phone, Category, Set) {
 						 if(phones[i][prev.displayProp] == prevSelectedItem)
 							 typeaheadPhones.push(phones[i].name);
 					 }
-//					 return typeaheadPhones;
 				 });
 		 		 return typeaheadPhones;
 		 	 }
@@ -54,6 +53,9 @@ function PhoneListCtrl($scope, Phone, Category, Set) {
 	
 	$scope.setCategory = function(category) {
 		$scope.current_category = category;
+		
+		if(category) 
+			category.filter = '';
 	};
 	$scope.setCategory($scope.categories[0]);
 	
@@ -69,15 +71,15 @@ function PhoneListCtrl($scope, Phone, Category, Set) {
 		var categoryIndex = $scope.categories.indexOf(category),
 			numCategories = $scope.categories.length;
 		
+		$scope.setCategory(category);
+		
 		for(var i = numCategories-1; i >= categoryIndex; i-- ) {
 			var cat = $scope.categories[i];
 			
 			if(cat.selectedItem) {
 				cat.selectedItem = undefined;
 			}
-			cat.filter = '';
 		}
-		$scope.setCategory(category);
 	};
 	
 }

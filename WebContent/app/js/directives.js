@@ -8,7 +8,6 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 				if(scope.current_category) {
 					var items = scope.current_category.typeahead();
 					element.typeahead({source: items, items: 5});
-//					UIUtil.refreshTypeahead(element, {source: items, items: 5});
 				}
 			}, true);
 		};
@@ -26,12 +25,14 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 			});
 		};		
 	})
-	.directive('categoryCollapse', function(UIUtil) {
+	.directive('categoryCollapse', function(UIUtil, $timeout) {
 		return function(scope, element, attrs) {
 			scope.$watch('current_category', function(newCat) {
 				if(newCat && newCat.title == attrs.categoryCollapse) {
-					element.collapse('show');
-					UIUtil.clearTypeahead();
+					$timeout(function() {
+						element.collapse('show');
+						UIUtil.clearTypeahead();
+					}, 0);
 				} 
 				else if(element.hasClass('in')) {
 					element.collapse('hide');

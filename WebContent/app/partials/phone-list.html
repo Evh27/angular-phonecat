@@ -12,9 +12,9 @@
 				<a class="close" ng-class="{hide: !category.selectedItem}" ng-click="clearCategory(category)">×</a>
 				<a class="accordion-toggle">{{category.displayName()}}</a>
 			</div>
-			<div category-collapse="{{category.title}}" class="accordion-body collapse" ng-class="{in:$first}">
+			<div category-collapse="{{category.title}}" class="accordion-body collapse">
 				<div class="accordion-inner row-fluid">
-					<ul class="{{category.displayType}}">
+					<ul class="{{category.displayType}}" ng-show="category.previousCategory.selectedItem || !category.previousCategory">
 						<li ng-class="{span4:category.displayType == 'thumbnails'}"
 							ng-repeat="item in category.items | filter: category.filter | categoryFilter : category">
 							<a ng-click="selectItem(category.items.indexOf(item))" ng-switch on="category.displayType">
