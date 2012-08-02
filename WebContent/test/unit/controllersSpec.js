@@ -11,9 +11,12 @@ describe('PhoneCat controllers', function() {
     });
   });
 
-  beforeEach(module('phonecatServices'));
-
-
+  beforeEach(function(){
+	  module('phonecatControllers');
+	  module('phonecatModels');
+	  module('phonecatServices');
+  });
+  
   describe('PhoneListCtrl', function(){
     var scope, ctrl, $httpBackend;
     
@@ -25,18 +28,20 @@ describe('PhoneCat controllers', function() {
           respond(phoneData);
 
       scope = $rootScope.$new();
-      ctrl = $controller(PhoneListCtrl, {$scope: scope});
+      
+      var mockCategories = {};
+      ctrl = $controller('PhoneListCtrl', {$scope: scope});
     }));
 
 
     it('should create two categories', function() {
-      expect(scope.categories.length).toEqual(2);
+      expect(scope.categories().length).toEqual(2);
     });
     
     it('should load phones correctly', function() {
     	$httpBackend.flush();
     	
-    	var phones = scope.categories[1]; 
+    	var phones = scope.categories()[1]; 
     	
     	expect(phones.title).toEqual('phone');
         expect(phones.items.length).toEqual(phoneData.length);
@@ -66,7 +71,7 @@ describe('PhoneCat controllers', function() {
 
       $routeParams.phoneId = 'xyz';
       scope = $rootScope.$new();
-      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
     }));
 
 

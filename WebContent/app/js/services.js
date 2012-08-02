@@ -3,79 +3,63 @@
 /* Services */
 
 angular.module('phonecatServices', ['ngResource'])
-	.factory('Phone', function($resource) {
-		return $resource('phones/:phoneId.json', {}, {
+	.service('Phone', function($resource) {
+		this.res = $resource('phones/:phoneId.json', {}, {
 			query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
 		});
-	})
-	.factory('Category', function() {
+	})	
+	.service('Categories', function(Model, Phone) {
+		var categories = [];
+		var add = function(category) {categories.push(category);};
 		
-		/** Category Object **/
-		function Category(title, displayProp, initItems) {
-			this.title = title;
-			(displayProp) ? this.displayProp = displayProp : this.displayProp = title;
+		add(Model.Category({
+			 title : 'carrier',
+			 typeahead: function() {
+				 var typeaheadCarriers = []
+				 for ( var i = 0; i < this.items.length; i++) {
+					var carrier = this.items[i];
+					typeaheadCarriers.push(carrier[this.displayProp]); 
+				 }
+				 return typeaheadCarriers;
+			 }
+		}));
+		
+		add(Model.Category({	
+			 title: 'phone',
+			 displayProp: 'name',
+			 displayType: 'thumbnails',
+			 initItems: function(category) {
+				 var phones = Phone.res.query([], function(phones) {
+				 	 var carrierSet = Model.Set('carrier');
+					 for (var i = 0; i < phones.length; i++) {
+						 carrierSet.add(phones[i].carrier);
+					 }
+					 categories[0].items = carrierSet.toArray();
+				 });
+				 return phones;
+			 },
+		 	 typeahead: function() {
+				var typeaheadPhones = [],
+					prev = this.previousCategory,
+					prevSelectedItem = prev.selectedItem[prev.displayProp];
 				
-			if(initItems)
-				initItems(this);
+				Phone.res.query([], function(phones) {
+					for ( var i = 0; i < phones.length; i++) {
+						if(phones[i][prev.displayProp] == prevSelectedItem)
+							typeaheadPhones.push(phones[i].name);
+					}
+				});
+				return typeaheadPhones;
+		 	 }
+		 }));
+		
+		for(var i=1; i < categories.length; i++) {
+			categories[i].previousCategory = categories[i-1];
 		}
-		Category.prototype.items = [];
-		Category.prototype.selectedItem = undefined;
-		Category.prototype.filter = '';
-		Category.prototype.displayType = '';
-		Category.prototype.displayProp = '';
-		Category.prototype.typeahead = undefined;
-		Category.prototype.displayName = function() {
-			if(this.selectedItem)
-				return this.selectedItem[this.displayProp];
-			else
-				return this.title.charAt(0).toUpperCase() + this.title.substr(1);
-		};
 		
-		return {
-			create : function(options) {
-				var cat = new Category();
-				
-				cat.title = options.title;
-				(options.displayProp) ? cat.displayProp = options.displayProp : cat.displayProp = options.title;
-				(options.displayType) ? cat.displayType = options.displayType : cat.displayType = 'list'; 
-				if(options.initItems)
-					cat.items = options.initItems();
-				
-				cat.typeahead = options.typeahead;
-								
-				return cat;
-			}
-		};		
+		this.all = function() { return categories; };
 	})
-	.factory('Set', function() {
-		
-		/** Set Object **/
-		function Set(arrayKey) { this.arrayKey = arrayKey; }
-		Set.prototype.collection = {};
-		Set.prototype.add = function(o) { if(o != undefined) this.collection[o] = true; };
-		Set.prototype.remove = function(o) { delete this.collection[o]; };
-		Set.prototype.arraySort = function(a,b){
-		    if(a.arrayKey<b.arrayKey) return -1;
-		    if(a.arrayKey>b.arrayKey) return 1;
-		    return 0;
-		}; 
-		Set.prototype.toArray = function() {
-			var array = [];
-			for(var prop in this.collection) {
-				var propObject = {};
-				propObject[this.arrayKey] = prop;
-				array.push(propObject);
-			}
-			return array.sort(this.arraySort);
-		};
-		
-		return {
-			create : function(arrayKey) {
-				return new Set(arrayKey);
-			}
-		};
-	})
-	.factory('UIUtil', function() {
+	.service('UIUtil', function() {
 		return {
 			refreshTypeahead: function(element, options) {
 				$('ul.typeahead').remove();

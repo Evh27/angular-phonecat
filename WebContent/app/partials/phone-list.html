@@ -7,7 +7,7 @@
 		<input ng-model="current_category.filter" category-typeahead id="filter" style="display: block; position: absolute; right: 0px" class="input-large" placeholder="Filter">
 	</div>
 	<div class="accordion" id="accordion">
-		<div class="accordion-group" ng-repeat="category in categories">
+		<div class="accordion-group" ng-repeat="category in categories()">
 			<div class="accordion-heading" ng-class="{'alert alert-success': category.selectedItem}">
 				<a class="close" ng-class="{hide: !category.selectedItem}" ng-click="clearCategory(category)">×</a>
 				<a class="accordion-toggle">{{category.displayName()}}</a>

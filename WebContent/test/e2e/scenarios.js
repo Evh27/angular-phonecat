@@ -4,8 +4,8 @@
 
 describe('PhoneCat App', function() {
 
-  it('should redirect index.html to index.html#/phones', function() {
-    browser().navigateTo('../../app/index.html');
+  it('should redirect /app/ to /app/#/phones', function() {
+    browser().navigateTo('../../app/');
     expect(browser().location().url()).toBe('/phones');
   });
 
