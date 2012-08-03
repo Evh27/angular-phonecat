@@ -29,7 +29,6 @@ describe('PhoneCat controllers', function() {
 
       scope = $rootScope.$new();
       
-      var mockCategories = {};
       ctrl = $controller('PhoneListCtrl', {$scope: scope});
     }));
 

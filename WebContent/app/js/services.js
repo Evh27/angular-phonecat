@@ -11,11 +11,11 @@ angular.module('phonecatServices', ['ngResource'])
 	.service('Categories', function(Model, Phone) {
 		var categories = [];
 		var add = function(category) {categories.push(category);};
-		
+	
 		add(Model.Category({
 			 title : 'carrier',
 			 typeahead: function() {
-				 var typeaheadCarriers = []
+				 var typeaheadCarriers = [];
 				 for ( var i = 0; i < this.items.length; i++) {
 					var carrier = this.items[i];
 					typeaheadCarriers.push(carrier[this.displayProp]); 

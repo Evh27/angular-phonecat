@@ -15,7 +15,7 @@ angular.module('phonecatDirectives', ['phonecatServices'])
 	.directive('searchTypeahead', function(Phone, UIUtil) {
 		return function(scope, element, attrs) {
 			element.bind('input change', function() {
-				var phones = Phone.query([], function() {
+				var phones = Phone.res.query([], function() {
 					var typeaheadPhones = [];
 					for ( var i = 0; i < phones.length; i++) {
 						typeaheadPhones.push(phones[i].name);
